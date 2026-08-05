@@ -1,5 +1,5 @@
 /* ==========================================================================
-   CLOUD SECURITY COMMAND CENTER — LUXURY OBSIDIAN & BULLETPROOF IPHONE THEME
+   CLOUD SECURITY COMMAND CENTER — LUXURY OBSIDIAN & ANIMATED MOBILE SWIPER
    ========================================================================== */
 
 :root {
@@ -722,7 +722,7 @@ body {
 }
 
 /* ==========================================================================
-   MOBILE CAROUSEL SWIPER STYLES
+   MOBILE CAROUSEL SWIPER STYLES & ANIMATIONS
    ========================================================================== */
 .mobile-carousel-header {
   display: flex;
@@ -778,6 +778,53 @@ body {
 .mobile-swipe-card-wrapper {
   touch-action: pan-y;
   margin-top: 0.85rem;
+  will-change: transform, opacity;
+}
+
+/* GPU Accelerated Card Swipe Animations */
+@keyframes slideInRight {
+  from {
+    transform: translateX(50px) scale(0.95);
+    opacity: 0.1;
+  }
+  to {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    transform: translateX(-50px) scale(0.95);
+    opacity: 0.1;
+  }
+  to {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes slideFadeIn {
+  from {
+    transform: translateY(12px) scale(0.97);
+    opacity: 0.2;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.slide-in-right {
+  animation: slideInRight 0.28s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+.slide-in-left {
+  animation: slideInLeft 0.28s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+.slide-fade-in {
+  animation: slideFadeIn 0.25s ease-out forwards;
 }
 
 /* ==========================================================================

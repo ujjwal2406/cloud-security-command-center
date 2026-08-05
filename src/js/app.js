@@ -12,6 +12,7 @@ class TimetableApp {
     this.currentMobileDayIndex = 0;
     this.touchStartX = 0;
     this.touchEndX = 0;
+    this.slideDirection = 'none'; // 'left' | 'right' | 'none'
     
     this.initElements();
     this.bindEvents();
@@ -279,9 +280,16 @@ class TimetableApp {
       this.currentMobileDayIndex = 0;
     }
 
-    // Render BOTH Mobile Swiper View & Desktop Grid View. CSS media queries toggle between them deterministically!
     const activeDay = filteredDays[this.currentMobileDayIndex];
     const totalCount = filteredDays.length;
+
+    // Apply animation class based on slide direction
+    let animClass = 'slide-fade-in';
+    if (this.slideDirection === 'next') animClass = 'slide-in-right';
+    if (this.slideDirection === 'prev') animClass = 'slide-in-left';
+
+    // Reset slide direction
+    this.slideDirection = 'none';
 
     // 1. Mobile Swiper HTML
     const mobileHTML = `
@@ -309,7 +317,7 @@ class TimetableApp {
           </button>
         </div>
 
-        <div class="mobile-swipe-card-wrapper" id="mobileSwipeWrapper">
+        <div class="mobile-swipe-card-wrapper ${animClass}" id="mobileSwipeWrapper">
           ${this.createDayCardHTML(activeDay)}
         </div>
       </div>
@@ -363,6 +371,7 @@ class TimetableApp {
     if (btnPrev) {
       btnPrev.addEventListener('click', () => {
         if (this.currentMobileDayIndex > 0) {
+          this.slideDirection = 'prev';
           this.currentMobileDayIndex--;
           this.renderTimetable();
         }
@@ -372,6 +381,7 @@ class TimetableApp {
     if (btnNext) {
       btnNext.addEventListener('click', () => {
         if (this.currentMobileDayIndex < filteredDays.length - 1) {
+          this.slideDirection = 'next';
           this.currentMobileDayIndex++;
           this.renderTimetable();
         }
@@ -380,7 +390,9 @@ class TimetableApp {
 
     if (daySelector) {
       daySelector.addEventListener('change', (e) => {
-        this.currentMobileDayIndex = parseInt(e.target.value);
+        const newIndex = parseInt(e.target.value);
+        this.slideDirection = newIndex > this.currentMobileDayIndex ? 'next' : 'prev';
+        this.currentMobileDayIndex = newIndex;
         this.renderTimetable();
       });
     }
@@ -405,12 +417,14 @@ class TimetableApp {
     if (distance < -swipeThreshold) {
       // Swiped Left -> Next Day
       if (this.currentMobileDayIndex < filteredDays.length - 1) {
+        this.slideDirection = 'next';
         this.currentMobileDayIndex++;
         this.renderTimetable();
       }
     } else if (distance > swipeThreshold) {
       // Swiped Right -> Prev Day
       if (this.currentMobileDayIndex > 0) {
+        this.slideDirection = 'prev';
         this.currentMobileDayIndex--;
         this.renderTimetable();
       }
