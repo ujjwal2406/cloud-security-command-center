@@ -1,6 +1,6 @@
 /**
- * LocalStorage Manager for Cloud Security Timetable, Gamification & Progress Tracker
- * DETERMINISTIC XP & LEVEL CALCULATION ENGINE (BUG-FREE)
+ * LocalStorage + Cloud REST API Sync Manager for Cloud Security Command Center
+ * Syncs seamlessly across browser localStorage AND backend server API (/api/progress)
  */
 
 const STORAGE_KEY = "cloudsec_playbook_tracker_v1";
@@ -8,14 +8,14 @@ const STORAGE_KEY = "cloudsec_playbook_tracker_v1";
 export class ProgressTracker {
   constructor() {
     this.state = this.loadState();
+    this.syncWithServer();
   }
 
   loadState() {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       try {
-        const parsed = JSON.parse(saved);
-        return parsed;
+        return JSON.parse(saved);
       } catch (e) {
         console.error("Failed to parse progress state from localStorage", e);
       }
@@ -38,6 +38,37 @@ export class ProgressTracker {
 
   saveState() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state));
+    this.pushToServer();
+  }
+
+  async syncWithServer() {
+    try {
+      const res = await fetch('/api/progress');
+      if (res.ok) {
+        const serverData = await res.json();
+        if (serverData && serverData.completedDays && Object.keys(serverData.completedDays).length > 0) {
+          this.state = { ...this.state, ...serverData };
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state));
+          if (window.app && typeof window.app.renderCurrentTab === 'function') {
+            window.app.renderCurrentTab();
+          }
+        }
+      }
+    } catch (e) {
+      // Server API offline or unreachable, fallback to localStorage cleanly
+    }
+  }
+
+  async pushToServer() {
+    try {
+      await fetch('/api/progress', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(this.state)
+      });
+    } catch (e) {
+      // Offline fallback
+    }
   }
 
   toggleTask(dayId, taskType) {
@@ -93,14 +124,8 @@ export class ProgressTracker {
     return Math.round((count / 3) * 100);
   }
 
-  /**
-   * Deterministically calculates total XP from actual checked state
-   * Eliminates duplicate XP inflation bugs when toggling checkboxes on/off
-   */
   calculateTotalXP() {
     let xp = 0;
-
-    // 1. Task XP
     Object.keys(this.state.completedDays).forEach(dayId => {
       const dayData = this.state.completedDays[dayId];
       if (dayData) {
@@ -110,7 +135,6 @@ export class ProgressTracker {
       }
     });
 
-    // 2. Project XP (+250 XP per completed project)
     if (this.state.completedProjects) {
       Object.keys(this.state.completedProjects).forEach(pId => {
         if (this.state.completedProjects[pId] === "Completed") {
@@ -119,7 +143,6 @@ export class ProgressTracker {
       });
     }
 
-    // 3. Certification XP (+500 XP per certified exam)
     if (this.state.certifications) {
       Object.keys(this.state.certifications).forEach(cId => {
         if (this.state.certifications[cId] === "Certified") {
@@ -167,7 +190,6 @@ export class ProgressTracker {
       (certifiedCount / 2) * 20
     );
 
-    // Deterministic XP & Level calculation
     const xp = this.calculateTotalXP();
     const level = Math.floor(xp / 500) + 1;
     const levelProgress = Math.round(((xp % 500) / 500) * 100);
