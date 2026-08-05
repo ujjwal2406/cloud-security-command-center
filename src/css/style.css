@@ -1,5 +1,5 @@
 /* ==========================================================================
-   CLOUD SECURITY COMMAND CENTER — LUXURY OBSIDIAN & MOBILE CAROUSEL THEME
+   CLOUD SECURITY COMMAND CENTER — LUXURY OBSIDIAN & BULLETPROOF IPHONE THEME
    ========================================================================== */
 
 :root {
@@ -722,19 +722,13 @@ body {
 }
 
 /* ==========================================================================
-   MOBILE CAROUSEL SWIPER STYLES (ACTIVE ON MOBILE SCREENS <= 768px)
+   MOBILE CAROUSEL SWIPER STYLES
    ========================================================================== */
-.mobile-carousel-container {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
 .mobile-carousel-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: rgba(13, 20, 36, 0.9);
+  background: rgba(13, 20, 36, 0.95);
   border: 1px solid var(--border-glow-azure);
   border-radius: 0.85rem;
   padding: 0.75rem 1rem;
@@ -783,17 +777,32 @@ body {
 
 .mobile-swipe-card-wrapper {
   touch-action: pan-y;
-  animation: slideFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes slideFadeIn {
-  from { opacity: 0.4; transform: scale(0.97); }
-  to { opacity: 1; transform: scale(1); }
+  margin-top: 0.85rem;
 }
 
 /* ==========================================================================
-   IPHONE & MOBILE SPECIFIC RESPONSIVE BREAKPOINTS (max-width: 600px)
+   VIEWPORT SWITCHING MEDIA QUERIES (iPhone 14 Pro Max & all screens <= 900px)
    ========================================================================== */
+@media (max-width: 900px) {
+  .mobile-carousel-view {
+    display: flex !important;
+    flex-direction: column;
+    gap: 0.85rem;
+  }
+  .desktop-grid-view {
+    display: none !important;
+  }
+}
+
+@media (min-width: 901px) {
+  .mobile-carousel-view {
+    display: none !important;
+  }
+  .desktop-grid-view {
+    display: block !important;
+  }
+}
+
 @media (max-width: 600px) {
   .app-container {
     padding: 0 0.85rem;

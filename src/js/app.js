@@ -9,7 +9,7 @@ class TimetableApp {
     this.searchQuery = '';
     this.audioEnabled = true;
     this.audioCtx = null;
-    this.currentMobileDayIndex = 0; // Tracks active day card index for mobile swiper
+    this.currentMobileDayIndex = 0;
     this.touchStartX = 0;
     this.touchEndX = 0;
     
@@ -272,7 +272,6 @@ class TimetableApp {
       return;
     }
 
-    // Ensure mobile day index is within bounds
     if (this.currentMobileDayIndex >= filteredDays.length) {
       this.currentMobileDayIndex = filteredDays.length - 1;
     }
@@ -280,23 +279,13 @@ class TimetableApp {
       this.currentMobileDayIndex = 0;
     }
 
-    const isMobile = window.innerWidth <= 768;
-
-    if (isMobile) {
-      this.renderMobileCarousel(filteredDays);
-    } else {
-      this.renderDesktopGrid(filteredDays);
-    }
-  }
-
-  renderMobileCarousel(filteredDays) {
+    // Render BOTH Mobile Swiper View & Desktop Grid View. CSS media queries toggle between them deterministically!
     const activeDay = filteredDays[this.currentMobileDayIndex];
     const totalCount = filteredDays.length;
 
-    const html = `
-      <div class="mobile-carousel-container">
-        
-        <!-- Swiper Control Header -->
+    // 1. Mobile Swiper HTML
+    const mobileHTML = `
+      <div class="mobile-carousel-view">
         <div class="mobile-carousel-header">
           <button class="btn-carousel-nav" id="btnPrevDay" ${this.currentMobileDayIndex === 0 ? 'disabled' : ''}>
             ◀ Prev
@@ -306,11 +295,11 @@ class TimetableApp {
             <select id="mobileDaySelector" class="mobile-day-select">
               ${filteredDays.map((d, index) => `
                 <option value="${index}" ${index === this.currentMobileDayIndex ? 'selected' : ''}>
-                  Day ${d.day}: ${d.title.substring(0, 26)}...
+                  Day ${d.day}: ${d.title.substring(0, 24)}...
                 </option>
               `).join('')}
             </select>
-            <div style="font-size: 0.75rem; color: var(--text-secondary); text-align: center; margin-top: 0.2rem;">
+            <div style="font-size: 0.75rem; color: var(--text-secondary); text-align: center; margin-top: 0.25rem;">
               Card ${this.currentMobileDayIndex + 1} of ${totalCount} (Swipe 👉👈)
             </div>
           </div>
@@ -320,15 +309,47 @@ class TimetableApp {
           </button>
         </div>
 
-        <!-- Single Active Day Card -->
         <div class="mobile-swipe-card-wrapper" id="mobileSwipeWrapper">
           ${this.createDayCardHTML(activeDay)}
         </div>
-
       </div>
     `;
 
-    this.timetablePanel.innerHTML = html;
+    // 2. Desktop Grid HTML
+    const groupedByCourse = {};
+    filteredDays.forEach(day => {
+      const cId = day.courseId || 1;
+      if (!groupedByCourse[cId]) {
+        groupedByCourse[cId] = [];
+      }
+      groupedByCourse[cId].push(day);
+    });
+
+    let desktopHTML = `<div class="desktop-grid-view">`;
+    Object.keys(groupedByCourse).forEach(cId => {
+      const courseObj = COURSE_MODULES.find(m => m.id === parseInt(cId));
+      const days = groupedByCourse[cId];
+
+      desktopHTML += `
+        <div class="month-group">
+          <div class="month-title">
+            <span>📺 ${courseObj ? courseObj.title : `Course ${cId}`}</span>
+            <span style="font-size: 0.8rem; font-weight: normal; color: var(--color-azure); margin-left: auto;">
+              ${courseObj ? courseObj.daysRange : ''}
+            </span>
+          </div>
+          <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 1.1rem;">
+            <strong>Course Focus & Sections:</strong> ${courseObj ? courseObj.focus : ''}
+          </div>
+          <div class="days-grid">
+            ${days.map(day => this.createDayCardHTML(day)).join('')}
+          </div>
+        </div>
+      `;
+    });
+    desktopHTML += `</div>`;
+
+    this.timetablePanel.innerHTML = mobileHTML + desktopHTML;
     this.bindDayCardEvents();
     this.bindMobileSwipeEvents(filteredDays);
   }
@@ -378,7 +399,7 @@ class TimetableApp {
   }
 
   handleSwipeGesture(filteredDays) {
-    const swipeThreshold = 50; // min 50px swipe distance
+    const swipeThreshold = 40; // min 40px swipe distance
     const distance = this.touchEndX - this.touchStartX;
 
     if (distance < -swipeThreshold) {
@@ -394,44 +415,6 @@ class TimetableApp {
         this.renderTimetable();
       }
     }
-  }
-
-  renderDesktopGrid(filteredDays) {
-    const groupedByCourse = {};
-    filteredDays.forEach(day => {
-      const cId = day.courseId || 1;
-      if (!groupedByCourse[cId]) {
-        groupedByCourse[cId] = [];
-      }
-      groupedByCourse[cId].push(day);
-    });
-
-    let html = '';
-
-    Object.keys(groupedByCourse).forEach(cId => {
-      const courseObj = COURSE_MODULES.find(m => m.id === parseInt(cId));
-      const days = groupedByCourse[cId];
-
-      html += `
-        <div class="month-group">
-          <div class="month-title">
-            <span>📺 ${courseObj ? courseObj.title : `Course ${cId}`}</span>
-            <span style="font-size: 0.8rem; font-weight: normal; color: var(--color-azure); margin-left: auto;">
-              ${courseObj ? courseObj.daysRange : ''}
-            </span>
-          </div>
-          <div style="font-size: 0.875rem; color: var(--text-secondary); margin-bottom: 1.1rem;">
-            <strong>Course Focus & Sections:</strong> ${courseObj ? courseObj.focus : ''}
-          </div>
-          <div class="days-grid">
-            ${days.map(day => this.createDayCardHTML(day)).join('')}
-          </div>
-        </div>
-      `;
-    });
-
-    this.timetablePanel.innerHTML = html;
-    this.bindDayCardEvents();
   }
 
   createDayCardHTML(day) {
