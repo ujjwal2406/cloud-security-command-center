@@ -1,5 +1,5 @@
 /* ==========================================================================
-   CLOUD SECURITY COMMAND CENTER — LUXURY OBSIDIAN & BOTTOM NAV MOBILE THEME
+   CLOUD SECURITY COMMAND CENTER — VIBRANT COURSE COLOR THEMES
    ========================================================================== */
 
 :root {
@@ -17,8 +17,9 @@
   --color-blue: #4facfe;
   --color-emerald: #00ff87;
   --color-gold: #ffb703;
-  --color-purple: #7f00ff;
+  --color-purple: #bf5af2;
   --color-pink: #ff007f;
+  --color-indigo: #4361ee;
   
   --text-primary: #ffffff;
   --text-secondary: #94a3b8;
@@ -272,7 +273,7 @@ body {
   font-size: 0.85rem;
   padding: 0.4rem 0.85rem;
   border-radius: 0.5rem;
-  box-shadow: 0 0 15px rgba(127, 0, 255, 0.4);
+  box-shadow: 0 0 15px rgba(191, 90, 242, 0.4);
   white-space: nowrap;
 }
 
@@ -515,27 +516,41 @@ body {
   gap: 1.25rem;
 }
 
-/* Day Card Component */
+/* Day Card Component Base */
 .day-card {
   background: var(--bg-card);
-  border: 1px solid var(--border-glass);
-  border-radius: 0.85rem;
-  padding: 1.25rem;
+  border: 2px solid var(--border-glass);
+  border-radius: 1rem;
+  padding: 1.35rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  transition: border-color 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.day-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--color-azure);
 }
 
 .day-card.completed {
-  border-color: var(--color-emerald);
+  border-color: var(--color-emerald) !important;
+  box-shadow: 0 0 20px rgba(0, 255, 135, 0.3) !important;
 }
 
 .day-card-header {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 0.65rem;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
 }
 
 .day-badge {
@@ -547,8 +562,145 @@ body {
   border-radius: 0.4rem;
 }
 
+.course-name-tag {
+  font-size: 0.675rem;
+  font-weight: 800;
+  padding: 0.2rem 0.55rem;
+  border-radius: 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ==========================================================================
+   VIBRANT COURSE-SPECIFIC COLOR THEMES
+   ========================================================================== */
+
+/* Course 1: Scott Duffy — AZ-104 (Electric Azure) */
+.day-card.course-theme-1 {
+  border-color: rgba(0, 242, 254, 0.4);
+  box-shadow: 0 8px 32px rgba(0, 242, 254, 0.12);
+}
+.day-card.course-theme-1::before {
+  background: linear-gradient(90deg, #00f2fe, #4facfe);
+}
+.day-card.course-theme-1 .course-name-tag {
+  background: rgba(0, 242, 254, 0.18);
+  color: #00f2fe;
+  border: 1px solid rgba(0, 242, 254, 0.4);
+}
+.day-card.course-theme-1 .course-section-banner {
+  background: rgba(0, 242, 254, 0.12);
+  border: 1px solid rgba(0, 242, 254, 0.35);
+  color: #00f2fe;
+}
+
+/* Course 2: Alan Rodrigues — AZ-500 (Neon Emerald) */
+.day-card.course-theme-2 {
+  border-color: rgba(0, 255, 135, 0.45);
+  box-shadow: 0 8px 32px rgba(0, 255, 135, 0.14);
+}
+.day-card.course-theme-2::before {
+  background: linear-gradient(90deg, #00ff87, #00b4d8);
+}
+.day-card.course-theme-2 .course-name-tag {
+  background: rgba(0, 255, 135, 0.18);
+  color: #00ff87;
+  border: 1px solid rgba(0, 255, 135, 0.45);
+}
+.day-card.course-theme-2 .course-section-banner {
+  background: rgba(0, 255, 135, 0.12);
+  border: 1px solid rgba(0, 255, 135, 0.35);
+  color: #00ff87;
+}
+
+/* Course 3: Alan Rodrigues — SC-100 (Vibrant Cyber Violet) */
+.day-card.course-theme-3 {
+  border-color: rgba(191, 90, 242, 0.5);
+  box-shadow: 0 8px 32px rgba(191, 90, 242, 0.16);
+}
+.day-card.course-theme-3::before {
+  background: linear-gradient(90deg, #bf5af2, #7f00ff);
+}
+.day-card.course-theme-3 .course-name-tag {
+  background: rgba(191, 90, 242, 0.2);
+  color: #e0aaff;
+  border: 1px solid rgba(191, 90, 242, 0.5);
+}
+.day-card.course-theme-3 .course-section-banner {
+  background: rgba(191, 90, 242, 0.14);
+  border: 1px solid rgba(191, 90, 242, 0.4);
+  color: #e0aaff;
+}
+
+/* Course 4: Stephane Maarek — AWS Security (Solar Gold & Amber) */
+.day-card.course-theme-4 {
+  border-color: rgba(255, 183, 3, 0.5);
+  box-shadow: 0 8px 32px rgba(255, 183, 3, 0.15);
+}
+.day-card.course-theme-4::before {
+  background: linear-gradient(90deg, #ffb703, #ff7b00);
+}
+.day-card.course-theme-4 .course-name-tag {
+  background: rgba(255, 183, 3, 0.2);
+  color: #ffb703;
+  border: 1px solid rgba(255, 183, 3, 0.5);
+}
+.day-card.course-theme-4 .course-section-banner {
+  background: rgba(255, 183, 3, 0.14);
+  border: 1px solid rgba(255, 183, 3, 0.4);
+  color: #ffb703;
+}
+
+/* Course 5: Zeal Vora — Terraform (Hot Pink & Neon Fuchsia) */
+.day-card.course-theme-5 {
+  border-color: rgba(255, 0, 127, 0.5);
+  box-shadow: 0 8px 32px rgba(255, 0, 127, 0.16);
+}
+.day-card.course-theme-5::before {
+  background: linear-gradient(90deg, #ff007f, #ff4d6d);
+}
+.day-card.course-theme-5 .course-name-tag {
+  background: rgba(255, 0, 127, 0.2);
+  color: #ff4d6d;
+  border: 1px solid rgba(255, 0, 127, 0.5);
+}
+.day-card.course-theme-5 .course-section-banner {
+  background: rgba(255, 0, 127, 0.14);
+  border: 1px solid rgba(255, 0, 127, 0.4);
+  color: #ff4d6d;
+}
+
+/* Course 6: Mumshad Mannambeth — CKS K8s (Kubernetes Royal Indigo) */
+.day-card.course-theme-6 {
+  border-color: rgba(67, 97, 238, 0.55);
+  box-shadow: 0 8px 32px rgba(67, 97, 238, 0.16);
+}
+.day-card.course-theme-6::before {
+  background: linear-gradient(90deg, #4361ee, #3a0ca3);
+}
+.day-card.course-theme-6 .course-name-tag {
+  background: rgba(67, 97, 238, 0.22);
+  color: #4895ef;
+  border: 1px solid rgba(67, 97, 238, 0.55);
+}
+.day-card.course-theme-6 .course-section-banner {
+  background: rgba(67, 97, 238, 0.15);
+  border: 1px solid rgba(67, 97, 238, 0.45);
+  color: #4895ef;
+}
+
+/* Common Section Banner */
+.course-section-banner {
+  font-size: 0.8rem;
+  border-radius: 0.45rem;
+  padding: 0.45rem 0.75rem;
+  margin-bottom: 0.85rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
 .day-title {
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   font-weight: 800;
   color: #fff;
   margin-bottom: 0.5rem;

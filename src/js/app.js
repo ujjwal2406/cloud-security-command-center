@@ -12,7 +12,7 @@ class TimetableApp {
     this.currentMobileDayIndex = 0;
     this.touchStartX = 0;
     this.touchEndX = 0;
-    this.slideDirection = 'none'; // Only set on active horizontal swipe or prev/next button click
+    this.slideDirection = 'none';
     
     this.initElements();
     this.bindEvents();
@@ -286,19 +286,16 @@ class TimetableApp {
     const activeDay = filteredDays[this.currentMobileDayIndex];
     const totalCount = filteredDays.length;
 
-    // Apply animation ONLY on horizontal swipe or prev/next button click
     let animClass = '';
     if (this.slideDirection === 'next') animClass = 'slide-in-right';
     if (this.slideDirection === 'prev') animClass = 'slide-in-left';
 
-    // Reset slide direction immediately so vertical scrolling / task checking doesn't animate
     this.slideDirection = 'none';
 
-    // 1. Mobile Swiper HTML (With Bottom Prev/Next Controls)
+    // 1. Mobile Swiper HTML
     const mobileHTML = `
       <div class="mobile-carousel-view">
         
-        <!-- Top Day Selector Header -->
         <div class="mobile-carousel-top-bar">
           <div style="font-size: 0.85rem; font-weight: 800; color: var(--color-azure);">
             📅 Day ${activeDay.day} of 120
@@ -312,12 +309,10 @@ class TimetableApp {
           </select>
         </div>
 
-        <!-- Middle Active Day Card -->
         <div class="mobile-swipe-card-wrapper ${animClass}" id="mobileSwipeWrapper">
           ${this.createDayCardHTML(activeDay)}
         </div>
 
-        <!-- Bottom Navigation Bar (Prev / Next Buttons at Bottom) -->
         <div class="mobile-carousel-bottom-bar">
           <button class="btn-carousel-nav" id="btnPrevDay" ${this.currentMobileDayIndex === 0 ? 'disabled' : ''}>
             ◀ Previous Day
@@ -409,7 +404,6 @@ class TimetableApp {
       });
     }
 
-    // Touch Swipe Gestures (Filters horizontal swipe vs vertical scroll)
     if (wrapper) {
       let touchStartY = 0;
 
@@ -425,7 +419,6 @@ class TimetableApp {
         const deltaX = Math.abs(this.touchEndX - this.touchStartX);
         const deltaY = Math.abs(touchEndY - touchStartY);
 
-        // Only trigger horizontal swipe animation if horizontal movement > vertical movement
         if (deltaX > deltaY && deltaX > 40) {
           this.handleSwipeGesture(filteredDays);
         }
@@ -437,14 +430,12 @@ class TimetableApp {
     const distance = this.touchEndX - this.touchStartX;
 
     if (distance < -40) {
-      // Swiped Left -> Next Day
       if (this.currentMobileDayIndex < filteredDays.length - 1) {
         this.slideDirection = 'next';
         this.currentMobileDayIndex++;
         this.renderTimetable();
       }
     } else if (distance > 40) {
-      // Swiped Right -> Prev Day
       if (this.currentMobileDayIndex > 0) {
         this.slideDirection = 'prev';
         this.currentMobileDayIndex--;
@@ -457,13 +448,15 @@ class TimetableApp {
     const dayData = this.tracker.state.completedDays[day.day] || { study: false, lab: false, revision: false, notes: "" };
     const dayProgress = this.tracker.getDayProgress(day.day);
     const isFullyCompleted = dayProgress === 100;
+    const courseId = day.courseId || 1;
 
     return `
-      <div class="day-card ${isFullyCompleted ? 'completed' : ''}" data-day="${day.day}">
+      <div class="day-card course-theme-${courseId} ${isFullyCompleted ? 'completed' : ''}" data-day="${day.day}">
         <div>
           <div class="day-card-header">
             <span class="day-badge ${day.category === 'Project' ? 'project' : ''}">${day.category === 'Certification' ? '🏆 CERT EXAM' : `DAY ${day.day} • W${day.week}`}</span>
-            <span style="font-size: 0.8rem; font-weight: 800; color: ${isFullyCompleted ? 'var(--color-emerald)' : 'var(--text-secondary)'};">
+            <span class="course-name-tag">COURSE ${courseId}</span>
+            <span style="font-size: 0.8rem; font-weight: 800; color: ${isFullyCompleted ? 'var(--color-emerald)' : 'var(--text-secondary)'}; margin-left: auto;">
               ${isFullyCompleted ? '✅ COMPLETED (+200 XP)' : `${dayProgress}% DONE`}
             </span>
           </div>
@@ -471,7 +464,7 @@ class TimetableApp {
           <div class="day-title">${day.title}</div>
           
           ${day.udemyRef ? `
-            <div style="font-size: 0.8rem; background: rgba(0, 242, 254, 0.12); border: 1px solid var(--border-glow-azure); border-radius: 0.4rem; padding: 0.4rem 0.65rem; color: var(--color-azure); margin-bottom: 0.75rem; font-weight: 700;">
+            <div class="course-section-banner">
               📺 ${day.udemyRef}
             </div>
           ` : ''}
@@ -533,7 +526,6 @@ class TimetableApp {
           this.showToast(`Task Unchecked. -${xpRemoved} XP`, "⚠️");
         }
 
-        // Keep slideDirection as 'none' so no animation triggers on task toggle
         this.slideDirection = 'none';
         this.renderCurrentTab();
       });
