@@ -9,6 +9,9 @@ class TimetableApp {
     this.searchQuery = '';
     this.audioEnabled = true;
     this.audioCtx = null;
+    this.currentMobileDayIndex = 0; // Tracks active day card index for mobile swiper
+    this.touchStartX = 0;
+    this.touchEndX = 0;
     
     this.initElements();
     this.bindEvents();
@@ -58,6 +61,7 @@ class TimetableApp {
     if (this.courseFilterSelect) {
       this.courseFilterSelect.addEventListener('change', (e) => {
         this.selectedCourse = e.target.value;
+        this.currentMobileDayIndex = 0;
         this.renderTimetable();
       });
     }
@@ -65,6 +69,7 @@ class TimetableApp {
     if (this.searchInput) {
       this.searchInput.addEventListener('input', (e) => {
         this.searchQuery = e.target.value.toLowerCase().trim();
+        this.currentMobileDayIndex = 0;
         this.renderCurrentTab();
       });
     }
@@ -258,6 +263,140 @@ class TimetableApp {
       );
     }
 
+    if (filteredDays.length === 0) {
+      this.timetablePanel.innerHTML = `
+        <div style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+          🔍 No study days matching search query "${this.searchQuery}". Try adjusting filters.
+        </div>
+      `;
+      return;
+    }
+
+    // Ensure mobile day index is within bounds
+    if (this.currentMobileDayIndex >= filteredDays.length) {
+      this.currentMobileDayIndex = filteredDays.length - 1;
+    }
+    if (this.currentMobileDayIndex < 0) {
+      this.currentMobileDayIndex = 0;
+    }
+
+    const isMobile = window.innerWidth <= 768;
+
+    if (isMobile) {
+      this.renderMobileCarousel(filteredDays);
+    } else {
+      this.renderDesktopGrid(filteredDays);
+    }
+  }
+
+  renderMobileCarousel(filteredDays) {
+    const activeDay = filteredDays[this.currentMobileDayIndex];
+    const totalCount = filteredDays.length;
+
+    const html = `
+      <div class="mobile-carousel-container">
+        
+        <!-- Swiper Control Header -->
+        <div class="mobile-carousel-header">
+          <button class="btn-carousel-nav" id="btnPrevDay" ${this.currentMobileDayIndex === 0 ? 'disabled' : ''}>
+            ◀ Prev
+          </button>
+          
+          <div class="mobile-day-indicator">
+            <select id="mobileDaySelector" class="mobile-day-select">
+              ${filteredDays.map((d, index) => `
+                <option value="${index}" ${index === this.currentMobileDayIndex ? 'selected' : ''}>
+                  Day ${d.day}: ${d.title.substring(0, 26)}...
+                </option>
+              `).join('')}
+            </select>
+            <div style="font-size: 0.75rem; color: var(--text-secondary); text-align: center; margin-top: 0.2rem;">
+              Card ${this.currentMobileDayIndex + 1} of ${totalCount} (Swipe 👉👈)
+            </div>
+          </div>
+
+          <button class="btn-carousel-nav" id="btnNextDay" ${this.currentMobileDayIndex === totalCount - 1 ? 'disabled' : ''}>
+            Next ▶
+          </button>
+        </div>
+
+        <!-- Single Active Day Card -->
+        <div class="mobile-swipe-card-wrapper" id="mobileSwipeWrapper">
+          ${this.createDayCardHTML(activeDay)}
+        </div>
+
+      </div>
+    `;
+
+    this.timetablePanel.innerHTML = html;
+    this.bindDayCardEvents();
+    this.bindMobileSwipeEvents(filteredDays);
+  }
+
+  bindMobileSwipeEvents(filteredDays) {
+    const btnPrev = document.getElementById('btnPrevDay');
+    const btnNext = document.getElementById('btnNextDay');
+    const daySelector = document.getElementById('mobileDaySelector');
+    const wrapper = document.getElementById('mobileSwipeWrapper');
+
+    if (btnPrev) {
+      btnPrev.addEventListener('click', () => {
+        if (this.currentMobileDayIndex > 0) {
+          this.currentMobileDayIndex--;
+          this.renderTimetable();
+        }
+      });
+    }
+
+    if (btnNext) {
+      btnNext.addEventListener('click', () => {
+        if (this.currentMobileDayIndex < filteredDays.length - 1) {
+          this.currentMobileDayIndex++;
+          this.renderTimetable();
+        }
+      });
+    }
+
+    if (daySelector) {
+      daySelector.addEventListener('change', (e) => {
+        this.currentMobileDayIndex = parseInt(e.target.value);
+        this.renderTimetable();
+      });
+    }
+
+    // Touch Swipe Gestures
+    if (wrapper) {
+      wrapper.addEventListener('touchstart', (e) => {
+        this.touchStartX = e.changedTouches[0].screenX;
+      }, { passive: true });
+
+      wrapper.addEventListener('touchend', (e) => {
+        this.touchEndX = e.changedTouches[0].screenX;
+        this.handleSwipeGesture(filteredDays);
+      }, { passive: true });
+    }
+  }
+
+  handleSwipeGesture(filteredDays) {
+    const swipeThreshold = 50; // min 50px swipe distance
+    const distance = this.touchEndX - this.touchStartX;
+
+    if (distance < -swipeThreshold) {
+      // Swiped Left -> Next Day
+      if (this.currentMobileDayIndex < filteredDays.length - 1) {
+        this.currentMobileDayIndex++;
+        this.renderTimetable();
+      }
+    } else if (distance > swipeThreshold) {
+      // Swiped Right -> Prev Day
+      if (this.currentMobileDayIndex > 0) {
+        this.currentMobileDayIndex--;
+        this.renderTimetable();
+      }
+    }
+  }
+
+  renderDesktopGrid(filteredDays) {
     const groupedByCourse = {};
     filteredDays.forEach(day => {
       const cId = day.courseId || 1;
@@ -290,14 +429,6 @@ class TimetableApp {
         </div>
       `;
     });
-
-    if (filteredDays.length === 0) {
-      html = `
-        <div style="text-align: center; padding: 3rem; color: var(--text-secondary);">
-          🔍 No study days matching search query "${this.searchQuery}". Try adjusting filters.
-        </div>
-      `;
-    }
 
     this.timetablePanel.innerHTML = html;
     this.bindDayCardEvents();
@@ -601,4 +732,9 @@ class TimetableApp {
 
 document.addEventListener('DOMContentLoaded', () => {
   window.app = new TimetableApp();
+  window.addEventListener('resize', () => {
+    if (window.app && window.app.activeTab === 'timetable') {
+      window.app.renderTimetable();
+    }
+  });
 });
