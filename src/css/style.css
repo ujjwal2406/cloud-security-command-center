@@ -122,9 +122,14 @@ body {
   gap: 0.75rem;
 }
 
-.brand-icon {
-  font-size: 1.8rem;
-  filter: drop-shadow(0 0 12px var(--color-azure));
+.brand-logo-img {
+  width: 42px;
+  height: 42px;
+  border-radius: 0.65rem;
+  box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
+  border: 1px solid var(--border-glow-azure);
+  object-fit: cover;
+  flex-shrink: 0;
 }
 
 .brand-title {
@@ -730,8 +735,13 @@ body {
     padding: calc(0.65rem + env(safe-area-inset-top)) 0.85rem 0.65rem 0.85rem;
   }
 
+  .brand-logo-img {
+    width: 36px;
+    height: 36px;
+  }
+
   .brand-title {
-    font-size: 1rem;
+    font-size: 0.95rem;
   }
 
   .brand-badge {
