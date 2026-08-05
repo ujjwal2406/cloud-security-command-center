@@ -2,9 +2,16 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Cloud Security Engineer 120-Day Command Center</title>
   <meta name="description" content="Luxury Gamified 120-Day Course-by-Course Roadmap & Progress Tracker for Cloud Security Engineers targeting ₹35-40 LPA.">
+  
+  <!-- Apple iOS Mobile Web App Meta Tags -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="CloudSec 120">
+  <meta name="theme-color" content="#030611">
+
   <link rel="stylesheet" href="./src/css/style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,15 +29,17 @@
   <nav class="navbar">
     <div class="brand">
       <span class="brand-icon">🛡️</span>
-      <span class="brand-title">CLOUD SEC COMMAND CENTER</span>
-      <span class="brand-badge">120-DAY EXECUTIVE PLAYBOOK</span>
+      <div>
+        <span class="brand-title">CLOUD SEC COMMAND CENTER</span>
+        <div class="brand-badge">120-DAY EXECUTIVE PLAYBOOK</div>
+      </div>
     </div>
-    <div style="display: flex; gap: 0.85rem; align-items: center;">
-      <button class="btn-secondary" id="btnAudioToggle" style="font-size: 0.825rem; padding: 0.5rem 1rem;">
+    <div class="nav-actions">
+      <button class="btn-secondary" id="btnAudioToggle">
         🔊 Sound: ON
       </button>
-      <button class="btn-secondary" id="btnExportProgress" style="font-size: 0.825rem; padding: 0.5rem 1rem;">
-        📥 Backup Progress (JSON)
+      <button class="btn-secondary" id="btnExportProgress">
+        📥 Backup (JSON)
       </button>
     </div>
   </nav>
@@ -41,15 +50,15 @@
     <!-- Motivational Daily Quote Banner -->
     <div class="quote-banner">
       <div class="quote-text">"Top 1% Cloud Security Architects don't wait for inspiration — they execute daily."</div>
-      <div class="quote-author">— 120-DAY TRANSITION MOTTO</div>
+      <div class="quote-author">— 120-DAY MOTTO</div>
     </div>
 
     <!-- Executive Summary Dashboard Header -->
     <div class="summary-card">
       <div class="summary-header">
         <div>
-          <div class="summary-title">Cloud Security Engineer Transition Dashboard</div>
-          <div class="summary-subtitle">Sequential Section-by-Section Roadmap • Target Goal: ₹14 LPA → ₹35–40 LPA in ONE Switch</div>
+          <div class="summary-title">Cloud Security Engineer Dashboard</div>
+          <div class="summary-subtitle">Section-by-Section Roadmap • Target Goal: ₹14 LPA → ₹35–40 LPA in ONE Switch</div>
         </div>
         <div class="target-ctc-badge">
           🎯 TARGET CTC: ₹35–40 LPA
@@ -62,7 +71,7 @@
         <div class="xp-info">
           <div class="xp-text">
             <span id="userXpText">0 XP total • 0% to Level 2</span>
-            <span>⚡ Rank: SecOps Professional</span>
+            <span class="rank-title">⚡ Rank: SecOps Professional</span>
           </div>
           <div class="xp-bar-bg">
             <div class="xp-bar-fill" id="userXpBarFill"></div>
@@ -101,7 +110,7 @@
           <div class="metric-icon">🎯</div>
           <div class="metric-info">
             <div class="value" id="metricReadinessScore">0%</div>
-            <div class="label">Interview Readiness</div>
+            <div class="label">Readiness Score</div>
           </div>
         </div>
 
@@ -109,7 +118,7 @@
           <div class="metric-icon">🔥</div>
           <div class="metric-info">
             <div class="value" id="metricStreakCount">1 Day</div>
-            <div class="label">Active Study Streak</div>
+            <div class="label">Active Streak</div>
           </div>
         </div>
 
@@ -125,44 +134,46 @@
     <div class="heatmap-card">
       <div class="heatmap-header">
         <div class="heatmap-title">📊 120-Day Study Activity Matrix</div>
-        <div style="font-size: 0.8rem; color: var(--text-secondary);">Dark = Pending | Neon Azure/Emerald = Completed</div>
+        <div style="font-size: 0.8rem; color: var(--text-secondary);">Swipe 👉 for 120 Days</div>
       </div>
-      <div class="heatmap-grid" id="heatmapGrid">
-        <!-- Dynamically populated 120 heatmap cells -->
+      <div class="heatmap-scroll-wrapper">
+        <div class="heatmap-grid" id="heatmapGrid">
+          <!-- Dynamically populated 120 heatmap cells -->
+        </div>
       </div>
     </div>
 
     <!-- Navigation Tabs -->
     <div class="tab-navigation">
       <button class="tab-btn active" data-tab="timetable">
-        📅 Section-by-Section Timetable
+        📅 Timetable
       </button>
       <button class="tab-btn" data-tab="projects">
-        🏗️ 15 Enterprise Repos Tracker
+        🏗️ 15 Repos
       </button>
       <button class="tab-btn" data-tab="certs">
-        📜 Certifications Roadmap
+        📜 Certifications
       </button>
       <button class="tab-btn" data-tab="courses">
-        📺 Course Sections Explorer
+        📺 Course Syllabus
       </button>
       <button class="tab-btn" data-tab="interview">
-        💡 Interview Prep Flashcards
+        💡 Flashcards
       </button>
     </div>
 
     <!-- Filter & Search Bar -->
     <div class="filter-bar">
-      <input type="text" class="search-input" id="searchInput" placeholder="🔍 Search Scott Duffy, Alan Rodrigues, Section 1, Section 26, KQL, Terraform...">
+      <input type="text" class="search-input" id="searchInput" placeholder="🔍 Search Scott Duffy, Alan Rodrigues, Section 1, KQL...">
       
       <select class="select-filter" id="courseFilterSelect">
-        <option value="all">📚 All 6 Courses (Linear Section-by-Section Sequence)</option>
+        <option value="all">📚 All 6 Courses (Linear Sequence)</option>
         <option value="1">Course 1: Scott Duffy - AZ-104 (Sections 1 to 26)</option>
         <option value="2">Course 2: Alan Rodrigues - AZ-500 (Sections 1 to 21)</option>
         <option value="3">Course 3: Alan Rodrigues - SC-100 (Sections 1 to 8)</option>
-        <option value="4">Course 4: Stephane Maarek - AWS Security (Sections 1 to 8)</option>
-        <option value="5">Course 5: Zeal Vora - HashiCorp Terraform (Sections 1 to 6)</option>
-        <option value="6">Course 6: Mumshad Mannambeth - CKS K8s Sec (Sections 1 to 6)</option>
+        <option value="4">Course 4: Stephane Maarek - AWS Sec (Sections 1 to 8)</option>
+        <option value="5">Course 5: Zeal Vora - Terraform (Sections 1 to 6)</option>
+        <option value="6">Course 6: Mumshad - CKS K8s (Sections 1 to 6)</option>
       </select>
     </div>
 
