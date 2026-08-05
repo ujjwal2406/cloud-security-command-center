@@ -12,7 +12,7 @@ class TimetableApp {
     this.currentMobileDayIndex = 0;
     this.touchStartX = 0;
     this.touchEndX = 0;
-    this.slideDirection = 'none'; // 'left' | 'right' | 'none'
+    this.slideDirection = 'none'; // Only set on active horizontal swipe or prev/next button click
     
     this.initElements();
     this.bindEvents();
@@ -63,6 +63,7 @@ class TimetableApp {
       this.courseFilterSelect.addEventListener('change', (e) => {
         this.selectedCourse = e.target.value;
         this.currentMobileDayIndex = 0;
+        this.slideDirection = 'none';
         this.renderTimetable();
       });
     }
@@ -71,6 +72,7 @@ class TimetableApp {
       this.searchInput.addEventListener('input', (e) => {
         this.searchQuery = e.target.value.toLowerCase().trim();
         this.currentMobileDayIndex = 0;
+        this.slideDirection = 'none';
         this.renderCurrentTab();
       });
     }
@@ -202,6 +204,7 @@ class TimetableApp {
       activePanel.classList.add('active');
     }
 
+    this.slideDirection = 'none';
     this.renderCurrentTab();
   }
 
@@ -283,43 +286,52 @@ class TimetableApp {
     const activeDay = filteredDays[this.currentMobileDayIndex];
     const totalCount = filteredDays.length;
 
-    // Apply animation class based on slide direction
-    let animClass = 'slide-fade-in';
+    // Apply animation ONLY on horizontal swipe or prev/next button click
+    let animClass = '';
     if (this.slideDirection === 'next') animClass = 'slide-in-right';
     if (this.slideDirection === 'prev') animClass = 'slide-in-left';
 
-    // Reset slide direction
+    // Reset slide direction immediately so vertical scrolling / task checking doesn't animate
     this.slideDirection = 'none';
 
-    // 1. Mobile Swiper HTML
+    // 1. Mobile Swiper HTML (With Bottom Prev/Next Controls)
     const mobileHTML = `
       <div class="mobile-carousel-view">
-        <div class="mobile-carousel-header">
-          <button class="btn-carousel-nav" id="btnPrevDay" ${this.currentMobileDayIndex === 0 ? 'disabled' : ''}>
-            ◀ Prev
-          </button>
-          
-          <div class="mobile-day-indicator">
-            <select id="mobileDaySelector" class="mobile-day-select">
-              ${filteredDays.map((d, index) => `
-                <option value="${index}" ${index === this.currentMobileDayIndex ? 'selected' : ''}>
-                  Day ${d.day}: ${d.title.substring(0, 24)}...
-                </option>
-              `).join('')}
-            </select>
-            <div style="font-size: 0.75rem; color: var(--text-secondary); text-align: center; margin-top: 0.25rem;">
-              Card ${this.currentMobileDayIndex + 1} of ${totalCount} (Swipe 👉👈)
-            </div>
+        
+        <!-- Top Day Selector Header -->
+        <div class="mobile-carousel-top-bar">
+          <div style="font-size: 0.85rem; font-weight: 800; color: var(--color-azure);">
+            📅 Day ${activeDay.day} of 120
           </div>
-
-          <button class="btn-carousel-nav" id="btnNextDay" ${this.currentMobileDayIndex === totalCount - 1 ? 'disabled' : ''}>
-            Next ▶
-          </button>
+          <select id="mobileDaySelector" class="mobile-day-select">
+            ${filteredDays.map((d, index) => `
+              <option value="${index}" ${index === this.currentMobileDayIndex ? 'selected' : ''}>
+                Day ${d.day}: ${d.title.substring(0, 24)}...
+              </option>
+            `).join('')}
+          </select>
         </div>
 
+        <!-- Middle Active Day Card -->
         <div class="mobile-swipe-card-wrapper ${animClass}" id="mobileSwipeWrapper">
           ${this.createDayCardHTML(activeDay)}
         </div>
+
+        <!-- Bottom Navigation Bar (Prev / Next Buttons at Bottom) -->
+        <div class="mobile-carousel-bottom-bar">
+          <button class="btn-carousel-nav" id="btnPrevDay" ${this.currentMobileDayIndex === 0 ? 'disabled' : ''}>
+            ◀ Previous Day
+          </button>
+
+          <div style="font-size: 0.775rem; color: var(--text-secondary); font-weight: 700;">
+            ${this.currentMobileDayIndex + 1} / ${totalCount}
+          </div>
+
+          <button class="btn-carousel-nav" id="btnNextDay" ${this.currentMobileDayIndex === totalCount - 1 ? 'disabled' : ''}>
+            Next Day ▶
+          </button>
+        </div>
+
       </div>
     `;
 
@@ -397,31 +409,41 @@ class TimetableApp {
       });
     }
 
-    // Touch Swipe Gestures
+    // Touch Swipe Gestures (Filters horizontal swipe vs vertical scroll)
     if (wrapper) {
+      let touchStartY = 0;
+
       wrapper.addEventListener('touchstart', (e) => {
         this.touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
       }, { passive: true });
 
       wrapper.addEventListener('touchend', (e) => {
         this.touchEndX = e.changedTouches[0].screenX;
-        this.handleSwipeGesture(filteredDays);
+        const touchEndY = e.changedTouches[0].screenY;
+
+        const deltaX = Math.abs(this.touchEndX - this.touchStartX);
+        const deltaY = Math.abs(touchEndY - touchStartY);
+
+        // Only trigger horizontal swipe animation if horizontal movement > vertical movement
+        if (deltaX > deltaY && deltaX > 40) {
+          this.handleSwipeGesture(filteredDays);
+        }
       }, { passive: true });
     }
   }
 
   handleSwipeGesture(filteredDays) {
-    const swipeThreshold = 40; // min 40px swipe distance
     const distance = this.touchEndX - this.touchStartX;
 
-    if (distance < -swipeThreshold) {
+    if (distance < -40) {
       // Swiped Left -> Next Day
       if (this.currentMobileDayIndex < filteredDays.length - 1) {
         this.slideDirection = 'next';
         this.currentMobileDayIndex++;
         this.renderTimetable();
       }
-    } else if (distance > swipeThreshold) {
+    } else if (distance > 40) {
       // Swiped Right -> Prev Day
       if (this.currentMobileDayIndex > 0) {
         this.slideDirection = 'prev';
@@ -511,6 +533,8 @@ class TimetableApp {
           this.showToast(`Task Unchecked. -${xpRemoved} XP`, "⚠️");
         }
 
+        // Keep slideDirection as 'none' so no animation triggers on task toggle
+        this.slideDirection = 'none';
         this.renderCurrentTab();
       });
     });
