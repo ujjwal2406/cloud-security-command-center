@@ -1,0 +1,7 @@
+environment    = "prod"
+location       = "eastus2"
+prefix         = "cloudsec-hubspoke"
+hub_vnet_cidr  = "10.0.0.0/16"
+spoke1_vnet_cidr = "10.1.0.0/16"
+admin_username = "secopsadmin"
+admin_ssh_key  = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC... secopsadmin@enterprise"

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cloud Security Engineer 120-Day Command Center</title>
+  <meta name="description" content="Luxury Gamified 120-Day Course-by-Course Roadmap & Progress Tracker for Cloud Security Engineers targeting ₹35-40 LPA.">
+  <link rel="stylesheet" href="./src/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Particle Confetti Canvas -->
+  <canvas id="confettiCanvas"></canvas>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="brand">
+      <span class="brand-icon">🛡️</span>
+      <span class="brand-title">CLOUD SEC COMMAND CENTER</span>
+      <span class="brand-badge">120-DAY EXECUTIVE PLAYBOOK</span>
+    </div>
+    <div style="display: flex; gap: 0.85rem; align-items: center;">
+      <button class="btn-secondary" id="btnAudioToggle" style="font-size: 0.825rem; padding: 0.5rem 1rem;">
+        🔊 Sound: ON
+      </button>
+      <button class="btn-secondary" id="btnExportProgress" style="font-size: 0.825rem; padding: 0.5rem 1rem;">
+        📥 Backup Progress (JSON)
+      </button>
+    </div>
+  </nav>
+
+  <!-- App Main Container -->
+  <div class="app-container">
+
+    <!-- Motivational Daily Quote Banner -->
+    <div class="quote-banner">
+      <div class="quote-text">"Top 1% Cloud Security Architects don't wait for inspiration — they execute daily."</div>
+      <div class="quote-author">— 120-DAY TRANSITION MOTTO</div>
+    </div>
+
+    <!-- Executive Summary Dashboard Header -->
+    <div class="summary-card">
+      <div class="summary-header">
+        <div>
+          <div class="summary-title">Cloud Security Engineer Transition Dashboard</div>
+          <div class="summary-subtitle">Sequential Section-by-Section Roadmap • Target Goal: ₹14 LPA → ₹35–40 LPA in ONE Switch</div>
+        </div>
+        <div class="target-ctc-badge">
+          🎯 TARGET CTC: ₹35–40 LPA
+        </div>
+      </div>
+
+      <!-- Gamified User Level & XP Progress Bar -->
+      <div class="user-level-container">
+        <div class="level-badge" id="userLevelBadge">LEVEL 1</div>
+        <div class="xp-info">
+          <div class="xp-text">
+            <span id="userXpText">0 XP total • 0% to Level 2</span>
+            <span>⚡ Rank: SecOps Professional</span>
+          </div>
+          <div class="xp-bar-bg">
+            <div class="xp-bar-fill" id="userXpBarFill"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Metric Grid -->
+      <div class="metrics-row">
+        
+        <div class="metric-box">
+          <div class="metric-icon">📅</div>
+          <div class="metric-info">
+            <div class="value" id="metricDaysCount">0 / 120</div>
+            <div class="label">Days Completed</div>
+          </div>
+        </div>
+
+        <div class="metric-box">
+          <div class="metric-icon">🏗️</div>
+          <div class="metric-info">
+            <div class="value" id="metricProjectsCount">0 / 15</div>
+            <div class="label">Repos Completed</div>
+          </div>
+        </div>
+
+        <div class="metric-box">
+          <div class="metric-icon">📜</div>
+          <div class="metric-info">
+            <div class="value" id="metricCertsCount">0 / 2</div>
+            <div class="label">Certs Earned</div>
+          </div>
+        </div>
+
+        <div class="metric-box">
+          <div class="metric-icon">🎯</div>
+          <div class="metric-info">
+            <div class="value" id="metricReadinessScore">0%</div>
+            <div class="label">Interview Readiness</div>
+          </div>
+        </div>
+
+        <div class="metric-box">
+          <div class="metric-icon">🔥</div>
+          <div class="metric-info">
+            <div class="value" id="metricStreakCount">1 Day</div>
+            <div class="label">Active Study Streak</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Readiness Score Progress Bar -->
+      <div class="progress-bar-container">
+        <div class="progress-bar-fill" id="progressBarFill"></div>
+      </div>
+    </div>
+
+    <!-- Interactive 120-Day Activity Heatmap Grid -->
+    <div class="heatmap-card">
+      <div class="heatmap-header">
+        <div class="heatmap-title">📊 120-Day Study Activity Matrix</div>
+        <div style="font-size: 0.8rem; color: var(--text-secondary);">Dark = Pending | Neon Azure/Emerald = Completed</div>
+      </div>
+      <div class="heatmap-grid" id="heatmapGrid">
+        <!-- Dynamically populated 120 heatmap cells -->
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <div class="tab-navigation">
+      <button class="tab-btn active" data-tab="timetable">
+        📅 Section-by-Section Timetable
+      </button>
+      <button class="tab-btn" data-tab="projects">
+        🏗️ 15 Enterprise Repos Tracker
+      </button>
+      <button class="tab-btn" data-tab="certs">
+        📜 Certifications Roadmap
+      </button>
+      <button class="tab-btn" data-tab="courses">
+        📺 Course Sections Explorer
+      </button>
+      <button class="tab-btn" data-tab="interview">
+        💡 Interview Prep Flashcards
+      </button>
+    </div>
+
+    <!-- Filter & Search Bar -->
+    <div class="filter-bar">
+      <input type="text" class="search-input" id="searchInput" placeholder="🔍 Search Scott Duffy, Alan Rodrigues, Section 1, Section 26, KQL, Terraform...">
+      
+      <select class="select-filter" id="courseFilterSelect">
+        <option value="all">📚 All 6 Courses (Linear Section-by-Section Sequence)</option>
+        <option value="1">Course 1: Scott Duffy - AZ-104 (Sections 1 to 26)</option>
+        <option value="2">Course 2: Alan Rodrigues - AZ-500 (Sections 1 to 21)</option>
+        <option value="3">Course 3: Alan Rodrigues - SC-100 (Sections 1 to 8)</option>
+        <option value="4">Course 4: Stephane Maarek - AWS Security (Sections 1 to 8)</option>
+        <option value="5">Course 5: Zeal Vora - HashiCorp Terraform (Sections 1 to 6)</option>
+        <option value="6">Course 6: Mumshad Mannambeth - CKS K8s Sec (Sections 1 to 6)</option>
+      </select>
+    </div>
+
+    <!-- Tab 1: 120-Day Timetable Panel -->
+    <div class="tab-panel active" id="panelTimetable">
+      <!-- Dynamically populated via app.js -->
+    </div>
+
+    <!-- Tab 2: 15 Enterprise Projects Panel -->
+    <div class="tab-panel" id="panelProjects">
+      <!-- Dynamically populated via app.js -->
+    </div>
+
+    <!-- Tab 3: Certifications Roadmap Panel -->
+    <div class="tab-panel" id="panelCerts">
+      <!-- Dynamically populated via app.js -->
+    </div>
+
+    <!-- Tab 4: Course Sequence Explorer Panel -->
+    <div class="tab-panel" id="panelCourses">
+      <!-- Dynamically populated via app.js -->
+    </div>
+
+    <!-- Tab 5: Interview Q&A Cards Panel -->
+    <div class="tab-panel" id="panelInterview">
+      <!-- Dynamically populated via app.js -->
+    </div>
+
+  </div>
+
+  <!-- Entry Script Module -->
+  <script type="module" src="./src/js/app.js"></script>
+</body>
+</html>

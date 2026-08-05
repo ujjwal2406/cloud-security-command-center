@@ -1,0 +1,14 @@
+{
+  "name": "cybershield-email-header-analyzer",
+  "version": "1.0.0",
+  "description": "Next-Gen Cybersecurity Email Header & Threat Intelligence Analyzer",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^8.1.5"
+  }
+}
