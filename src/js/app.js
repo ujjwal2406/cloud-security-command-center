@@ -445,10 +445,11 @@ class TimetableApp {
   }
 
   createDayCardHTML(day) {
-    const dayData = this.tracker.state.completedDays[day.day] || { study: false, lab: false, revision: false, notes: "" };
+    const dayData = this.tracker.state.completedDays[day.day] || { study: false, lab: false, revision: false, notes: "", pdfNote: null };
     const dayProgress = this.tracker.getDayProgress(day.day);
     const isFullyCompleted = dayProgress === 100;
     const courseId = day.courseId || 1;
+    const hasPdf = dayData.pdfNote && dayData.pdfNote.dataUrl;
 
     return `
       <div class="day-card course-theme-${courseId} ${isFullyCompleted ? 'completed' : ''}" data-day="${day.day}">
@@ -493,6 +494,30 @@ class TimetableApp {
         </div>
 
         <div>
+          <!-- PDF Notes Vault Container -->
+          <div class="pdf-vault-container" data-day="${day.day}">
+            ${hasPdf ? `
+              <div class="pdf-notes-box">
+                <div class="pdf-info">
+                  <span class="pdf-icon">📄</span>
+                  <div class="pdf-details">
+                    <div class="pdf-name" title="${dayData.pdfNote.name}">${dayData.pdfNote.name}</div>
+                    <div class="pdf-meta">${dayData.pdfNote.size} • ${dayData.pdfNote.uploadedAt} (+50 XP)</div>
+                  </div>
+                </div>
+                <div class="pdf-actions">
+                  <button class="btn-pdf-view" data-day="${day.day}">👁️ View PDF</button>
+                  <button class="btn-pdf-delete" data-day="${day.day}">🗑️</button>
+                </div>
+              </div>
+            ` : `
+              <label class="btn-pdf-upload">
+                <span>📄 Upload Day ${day.day} PDF Notes Backup (+50 XP)</span>
+                <input type="file" accept="application/pdf" class="pdf-file-input" data-day="${day.day}">
+              </label>
+            `}
+          </div>
+
           <textarea 
             class="notes-area" 
             placeholder="Add key notes, commands, or takeaways for Day ${day.day}..."
@@ -535,6 +560,61 @@ class TimetableApp {
       textarea.addEventListener('input', (e) => {
         const dayId = e.target.getAttribute('data-day');
         this.tracker.saveDayNotes(dayId, e.target.value);
+      });
+    });
+
+    // PDF Upload Event Listeners
+    document.querySelectorAll('.pdf-file-input').forEach(input => {
+      input.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        const dayId = e.target.getAttribute('data-day');
+        if (!file) return;
+
+        if (file.type !== 'application/pdf') {
+          alert('Please select a valid PDF document.');
+          return;
+        }
+
+        const sizeMB = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
+        const reader = new FileReader();
+        
+        reader.onload = (event) => {
+          const dataUrl = event.target.result;
+          this.tracker.attachPdfNote(dayId, file.name, dataUrl, sizeMB);
+          this.triggerConfetti();
+          this.showToast(`PDF Notes "${file.name}" Saved & Backed Up! +50 XP!`, "📄");
+          this.slideDirection = 'none';
+          this.renderCurrentTab();
+        };
+
+        reader.readAsDataURL(file);
+      });
+    });
+
+    // PDF View Listener
+    document.querySelectorAll('.btn-pdf-view').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const dayId = e.currentTarget.getAttribute('data-day');
+        const dayData = this.tracker.state.completedDays[dayId];
+        if (dayData && dayData.pdfNote && dayData.pdfNote.dataUrl) {
+          const win = window.open();
+          if (win) {
+            win.document.write(`<iframe src="${dayData.pdfNote.dataUrl}" frameborder="0" style="border:0; top:0px; left:0px; bottom:0px; right:0px; width:100%; height:100%;" allowfullscreen></iframe>`);
+          }
+        }
+      });
+    });
+
+    // PDF Delete Listener
+    document.querySelectorAll('.btn-pdf-delete').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const dayId = e.currentTarget.getAttribute('data-day');
+        if (confirm(`Are you sure you want to remove the PDF notes backup for Day ${dayId}?`)) {
+          this.tracker.removePdfNote(dayId);
+          this.showToast(`PDF notes backup removed.`, "ℹ️");
+          this.slideDirection = 'none';
+          this.renderCurrentTab();
+        }
       });
     });
   }

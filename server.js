@@ -56,7 +56,7 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // API Route: POST /api/progress
+  // API Route: POST /api/progress (Allows PDF Data Payloads up to 50MB)
   if (req.url === '/api/progress' && req.method === 'POST') {
     let body = '';
     req.on('data', chunk => { body += chunk.toString(); });
@@ -69,7 +69,7 @@ const server = http.createServer((req, res) => {
             res.end(JSON.stringify({ error: "Failed to save progress" }));
           } else {
             res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ success: true, message: "Progress synced to server database!" }));
+            res.end(JSON.stringify({ success: true, message: "Progress & PDF notes synced to server database!" }));
           }
         });
       } catch (e) {
@@ -102,5 +102,5 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, '127.0.0.1', () => {
-  console.log(`Server running with REST API at http://127.0.0.1:${PORT}/`);
+  console.log(`Server running with REST API & PDF Vault at http://127.0.0.1:${PORT}/`);
 });

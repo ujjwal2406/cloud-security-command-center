@@ -1,4 +1,12 @@
-// Vercel Serverless Function: GET & POST /api/progress
+// Vercel Serverless Function: GET & POST /api/progress with PDF Notes Vault
+
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: '10mb',
+    },
+  },
+};
 
 let memoryStore = {
   completedDays: {},
@@ -27,7 +35,7 @@ export default function handler(req, res) {
       if (data) {
         memoryStore = { ...memoryStore, ...data };
       }
-      return res.status(200).json({ success: true, message: "Progress recorded to cloud server!" });
+      return res.status(200).json({ success: true, message: "Progress & PDF notes recorded to cloud server!" });
     } catch (e) {
       return res.status(400).json({ error: "Invalid JSON data" });
     }

@@ -1,6 +1,7 @@
 /**
  * LocalStorage + Cloud REST API Sync Manager for Cloud Security Command Center
  * Syncs seamlessly across browser localStorage AND backend server API (/api/progress)
+ * Includes PDF Notes Vault Support for Day-by-Day Study Backups
  */
 
 const STORAGE_KEY = "cloudsec_playbook_tracker_v1";
@@ -25,8 +26,8 @@ export class ProgressTracker {
 
   getDefaultState() {
     return {
-      completedDays: {}, // dayId: { study: true, lab: true, revision: true, notes: "..." }
-      completedProjects: {}, // projectId: "Not Started" | "In Progress" | "Completed"
+      completedDays: {}, // dayId: { study: true, lab: true, revision: true, notes: "...", pdfNote: { name, dataUrl, size } }
+      completedProjects: {},
       certifications: {
         "az-500": "Not Started",
         "sc-100": "Not Started"
@@ -37,7 +38,11 @@ export class ProgressTracker {
   }
 
   saveState() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state));
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state));
+    } catch (e) {
+      console.warn("LocalStorage quota exceeded, pushing to cloud server directly", e);
+    }
     this.pushToServer();
   }
 
@@ -48,14 +53,18 @@ export class ProgressTracker {
         const serverData = await res.json();
         if (serverData && serverData.completedDays && Object.keys(serverData.completedDays).length > 0) {
           this.state = { ...this.state, ...serverData };
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state));
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state));
+          } catch (e) {
+            // Local storage quota fallback
+          }
           if (window.app && typeof window.app.renderCurrentTab === 'function') {
             window.app.renderCurrentTab();
           }
         }
       }
     } catch (e) {
-      // Server API offline or unreachable, fallback to localStorage cleanly
+      // Offline fallback
     }
   }
 
@@ -73,7 +82,7 @@ export class ProgressTracker {
 
   toggleTask(dayId, taskType) {
     if (!this.state.completedDays[dayId]) {
-      this.state.completedDays[dayId] = { study: false, lab: false, revision: false, notes: "" };
+      this.state.completedDays[dayId] = { study: false, lab: false, revision: false, notes: "", pdfNote: null };
     }
 
     const isCurrentlyChecked = this.state.completedDays[dayId][taskType];
@@ -87,10 +96,30 @@ export class ProgressTracker {
 
   saveDayNotes(dayId, notesText) {
     if (!this.state.completedDays[dayId]) {
-      this.state.completedDays[dayId] = { study: false, lab: false, revision: false, notes: "" };
+      this.state.completedDays[dayId] = { study: false, lab: false, revision: false, notes: "", pdfNote: null };
     }
     this.state.completedDays[dayId].notes = notesText;
     this.saveState();
+  }
+
+  attachPdfNote(dayId, pdfName, pdfDataUrl, sizeStr) {
+    if (!this.state.completedDays[dayId]) {
+      this.state.completedDays[dayId] = { study: false, lab: false, revision: false, notes: "", pdfNote: null };
+    }
+    this.state.completedDays[dayId].pdfNote = {
+      name: pdfName,
+      dataUrl: pdfDataUrl,
+      size: sizeStr,
+      uploadedAt: new Date().toLocaleDateString()
+    };
+    this.saveState();
+  }
+
+  removePdfNote(dayId) {
+    if (this.state.completedDays[dayId]) {
+      this.state.completedDays[dayId].pdfNote = null;
+      this.saveState();
+    }
   }
 
   setProjectStatus(projectId, status) {
@@ -132,6 +161,7 @@ export class ProgressTracker {
         if (dayData.study) xp += 50;
         if (dayData.lab) xp += 100;
         if (dayData.revision) xp += 50;
+        if (dayData.pdfNote) xp += 50; // Bonus XP for uploading PDF notes!
       }
     });
 
