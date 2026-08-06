@@ -494,25 +494,32 @@ class TimetableApp {
         </div>
 
         <div>
-          <!-- PDF Notes Vault Container -->
+          <!-- Luxury PDF Notes Vault Dropzone Container -->
           <div class="pdf-vault-container" data-day="${day.day}">
+            <div class="pdf-vault-header">
+              <span>📄 DAY ${day.day} PDF NOTES VAULT</span>
+              <span style="color: var(--color-emerald); font-size: 0.7rem; font-weight: 800;">+50 XP BONUS</span>
+            </div>
+
             ${hasPdf ? `
-              <div class="pdf-notes-box">
-                <div class="pdf-info">
-                  <span class="pdf-icon">📄</span>
-                  <div class="pdf-details">
-                    <div class="pdf-name" title="${dayData.pdfNote.name}">${dayData.pdfNote.name}</div>
-                    <div class="pdf-meta">${dayData.pdfNote.size} • ${dayData.pdfNote.uploadedAt} (+50 XP)</div>
-                  </div>
+              <div class="pdf-active-card">
+                <div class="pdf-file-brand-icon">📄</div>
+                <div class="pdf-file-info">
+                  <div class="pdf-file-name" title="${dayData.pdfNote.name}">${dayData.pdfNote.name}</div>
+                  <div class="pdf-file-meta">⚡ ${dayData.pdfNote.size} • Backed Up ${dayData.pdfNote.uploadedAt}</div>
                 </div>
-                <div class="pdf-actions">
-                  <button class="btn-pdf-view" data-day="${day.day}">👁️ View PDF</button>
-                  <button class="btn-pdf-delete" data-day="${day.day}">🗑️</button>
+                <div class="pdf-file-actions">
+                  <button class="btn-pdf-action-view" data-day="${day.day}">👁️ Open PDF</button>
+                  <button class="btn-pdf-action-delete" data-day="${day.day}">🗑️</button>
                 </div>
               </div>
             ` : `
-              <label class="btn-pdf-upload">
-                <span>📄 Upload Day ${day.day} PDF Notes Backup (+50 XP)</span>
+              <label class="pdf-dropzone-box">
+                <div class="pdf-dropzone-icon">☁️</div>
+                <div class="pdf-dropzone-text">
+                  <strong>Tap to Upload Day ${day.day} PDF Notes</strong>
+                  <span class="pdf-dropzone-subtext">Supports PDF Documents • Cloud Sync Backed Up</span>
+                </div>
                 <input type="file" accept="application/pdf" class="pdf-file-input" data-day="${day.day}">
               </label>
             `}
@@ -592,7 +599,7 @@ class TimetableApp {
     });
 
     // PDF View Listener
-    document.querySelectorAll('.btn-pdf-view').forEach(btn => {
+    document.querySelectorAll('.btn-pdf-action-view').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const dayId = e.currentTarget.getAttribute('data-day');
         const dayData = this.tracker.state.completedDays[dayId];
@@ -606,7 +613,7 @@ class TimetableApp {
     });
 
     // PDF Delete Listener
-    document.querySelectorAll('.btn-pdf-delete').forEach(btn => {
+    document.querySelectorAll('.btn-pdf-action-delete').forEach(btn => {
       btn.addEventListener('click', (e) => {
         const dayId = e.currentTarget.getAttribute('data-day');
         if (confirm(`Are you sure you want to remove the PDF notes backup for Day ${dayId}?`)) {

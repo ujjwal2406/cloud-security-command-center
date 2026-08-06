@@ -1,5 +1,5 @@
 /* ==========================================================================
-   CLOUD SECURITY COMMAND CENTER — VIBRANT COURSE COLOR THEMES & PDF VAULT
+   CLOUD SECURITY COMMAND CENTER — LUXURY PDF VAULT & COURSE COLOR THEMES
    ========================================================================== */
 
 :root {
@@ -765,106 +765,138 @@ body {
   font-family: var(--font-sans);
 }
 
-/* PDF Notes Vault Component */
+/* ==========================================================================
+   LUXURY PDF NOTES VAULT COMPONENT STYLING
+   ========================================================================== */
 .pdf-vault-container {
   margin-bottom: 0.85rem;
+  background: rgba(8, 13, 26, 0.6);
+  border: 1px solid var(--border-glass);
+  border-radius: 0.75rem;
+  padding: 0.75rem;
 }
 
-.btn-pdf-upload {
+.pdf-vault-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.725rem;
+  font-weight: 800;
+  color: var(--color-azure);
+  letter-spacing: 0.04em;
+  margin-bottom: 0.5rem;
+}
+
+.pdf-dropzone-box {
   display: flex;
   align-items: center;
-  justify-content: center;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px dashed var(--border-glow-azure);
-  border-radius: 0.6rem;
-  padding: 0.65rem 0.85rem;
-  color: var(--color-azure);
-  font-size: 0.825rem;
-  font-weight: 700;
+  gap: 0.75rem;
+  background: linear-gradient(135deg, rgba(0, 242, 254, 0.05) 0%, rgba(127, 0, 255, 0.05) 100%);
+  border: 2px dashed rgba(0, 242, 254, 0.35);
+  border-radius: 0.65rem;
+  padding: 0.75rem 1rem;
   cursor: pointer;
   transition: all 0.2s ease;
-  min-height: 44px;
-  width: 100%;
-  text-align: center;
+  min-height: 54px;
 }
 
-.btn-pdf-upload:hover {
-  background: rgba(0, 242, 254, 0.12);
+.pdf-dropzone-box:hover {
+  background: rgba(0, 242, 254, 0.1);
   border-color: var(--color-azure);
+  transform: translateY(-1px);
 }
 
-.pdf-notes-box {
-  background: rgba(8, 13, 26, 0.95);
+.pdf-dropzone-icon {
+  font-size: 1.6rem;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 8px var(--color-azure));
+}
+
+.pdf-dropzone-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.pdf-dropzone-text strong {
+  font-size: 0.825rem;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.pdf-dropzone-subtext {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+}
+
+.pdf-active-card {
+  background: rgba(13, 20, 36, 0.95);
   border: 1px solid var(--color-azure);
-  box-shadow: 0 0 15px rgba(0, 242, 254, 0.25);
+  box-shadow: 0 0 20px rgba(0, 242, 254, 0.25);
   border-radius: 0.65rem;
-  padding: 0.75rem 0.95rem;
+  padding: 0.75rem 1rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
 }
 
-.pdf-info {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  overflow: hidden;
-}
-
-.pdf-icon {
-  font-size: 1.5rem;
+.pdf-file-brand-icon {
+  font-size: 1.6rem;
   flex-shrink: 0;
+  filter: drop-shadow(0 0 10px var(--color-azure));
 }
 
-.pdf-details {
+.pdf-file-info {
+  flex: 1;
   overflow: hidden;
 }
 
-.pdf-name {
+.pdf-file-name {
   font-size: 0.85rem;
   font-weight: 800;
   color: #fff;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 180px;
+  max-width: 170px;
 }
 
-.pdf-meta {
+.pdf-file-meta {
   font-size: 0.725rem;
   color: var(--color-emerald);
   font-weight: 700;
+  margin-top: 0.1rem;
 }
 
-.pdf-actions {
+.pdf-file-actions {
   display: flex;
   align-items: center;
   gap: 0.4rem;
   flex-shrink: 0;
 }
 
-.btn-pdf-view {
+.btn-pdf-action-view {
   background: linear-gradient(135deg, var(--color-azure) 0%, var(--color-blue) 100%);
   color: #030611;
   border: none;
   border-radius: 0.45rem;
-  padding: 0.4rem 0.75rem;
+  padding: 0.45rem 0.8rem;
   font-size: 0.775rem;
-  font-weight: 800;
+  font-weight: 900;
   cursor: pointer;
-  min-height: 38px;
+  min-height: 40px;
+  box-shadow: 0 0 12px rgba(0, 242, 254, 0.3);
 }
 
-.btn-pdf-delete {
+.btn-pdf-action-delete {
   background: rgba(255, 77, 109, 0.15);
   border: 1px solid rgba(255, 77, 109, 0.4);
   color: #ff4d6d;
   border-radius: 0.45rem;
-  padding: 0.4rem 0.6rem;
+  padding: 0.45rem 0.65rem;
   font-size: 0.85rem;
   cursor: pointer;
-  min-height: 38px;
+  min-height: 40px;
 }
 
 /* Projects Grid */
